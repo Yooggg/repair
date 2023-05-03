@@ -1,5 +1,6 @@
 # Getting Started
-## Postgres initialization
+## Postgres initialization  
+
 CREATE TABLE LOCOMOTIVE(  
 ID SERIAL PRIMARY KEY,  
 SERIES VARCHAR,  
