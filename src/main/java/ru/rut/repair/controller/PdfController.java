@@ -2,7 +2,7 @@ package ru.rut.repair.controller;
 
 import com.lowagie.text.*;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,31 +11,24 @@ import ru.rut.repair.model.Act;
 import ru.rut.repair.model.Inventory;
 import ru.rut.repair.model.Locomotive;
 import ru.rut.repair.model.Works;
-import ru.rut.repair.repository.ActRepository;
 import ru.rut.repair.service.ActService;
 import ru.rut.repair.service.InventoryService;
-import ru.rut.repair.service.LocomotiveService;
 import ru.rut.repair.service.WorksService;
 
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Controller
 public class PdfController {
     private final ActService actService;
-    private final ActRepository actRepository;
-    private final LocomotiveService locomotiveService;
     private final WorksService worksService;
     private final InventoryService inventoryService;
 
-    public PdfController(ActService actService, ActRepository actRepository, LocomotiveService locomotiveService, WorksService worksService, InventoryService inventoryService) {
+    public PdfController(ActService actService, WorksService worksService, InventoryService inventoryService) {
         this.actService = actService;
-        this.actRepository = actRepository;
-        this.locomotiveService = locomotiveService;
         this.worksService = worksService;
         this.inventoryService = inventoryService;
     }
@@ -74,18 +67,10 @@ public class PdfController {
         document.add(new Paragraph("При приемке не выявлено нарушений действующей нормативной документации по ремонту(техническому обслуживанию, модернизации)(правил, инструкций и т.д.)."));
         document.add(new Paragraph(Chunk.NEWLINE));
         document.add(new Paragraph(Chunk.NEWLINE));
-        Rectangle line = new Rectangle(30f, 30f, PageSize.A4.getRight(30f), PageSize.A4.getRelativeTop());
-        line.setBorder(Rectangle.TOP);
-        line.setBorderWidth(1f);
-        line.setBorderColor(Color.BLACK);
-        document.add(line);
-        document.add(new Paragraph("ФИО"));
+        createLine(document,"ФИО");
         document.add(new Paragraph(Chunk.NEWLINE));
         document.add(new Paragraph(Chunk.NEWLINE));
-        line.setTop(220f);
-        document.add(line);
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("дата"));
+        createLine(document,"дата");
 
         document.close();
         return document;
@@ -126,7 +111,6 @@ public class PdfController {
 
         document.add(table);
     }
-
     private void createTableWorkName(Document document, Act act){
         Table table = new Table(2);
         ArrayList<String> headerTable = new ArrayList<>();
@@ -144,17 +128,16 @@ public class PdfController {
         List<Works> worksList = worksService.getListByActId(act.getId());
 
         worksList.forEach(e ->{
-            for (int i = 1; i < worksList.size() + 1; i++) {
-                listRows.put(i, Arrays.asList(e.getName(), e.getQuantity().toString()));
-                listRows.forEach((index,userDetailRow) -> {
-                    String currentName = userDetailRow.get(0);
-                    String currentQuantity = userDetailRow.get(1);
+            listRows.put(worksList.indexOf(e), Arrays.asList(e.getName(), e.getQuantity().toString()));
+        });
 
-                    table.addCell(new Cell(new Phrase(currentName)));
-                    table.addCell(new Cell(new Phrase(currentQuantity)));
+        listRows.forEach((index,userDetailRow) -> {
+            String currentName = userDetailRow.get(0);
+            String currentQuantity = userDetailRow.get(1);
 
-                });
-            }
+            table.addCell(new Cell(new Phrase(currentName)));
+            table.addCell(new Cell(new Phrase(currentQuantity)));
+
         });
 
         document.add(table);
@@ -178,25 +161,37 @@ public class PdfController {
         LinkedHashMap<Integer, List<String>> listRows = new LinkedHashMap<>();
         List<Inventory> inventoryList = inventoryService.getListByActId(act.getId());
 
-        inventoryList.forEach(e -> {
-            for (int i = 1; i < inventoryList.size() + 1; i++) {
-                listRows.put(i, Arrays.asList(e.getNumber().toString(), e.getInventory_name(), e.getMeasure_unit(),e.getQuantity_norm().toString(),e.getQuantity_fact().toString()));
-                listRows.forEach((index,userDetailRow) -> {
-                    String currentNumber = userDetailRow.get(0);
-                    String currentInventoryName = userDetailRow.get(1);
-                    String currentMeasureUnit = userDetailRow.get(2);
-                    String currentQuantityNorm = userDetailRow.get(3);
-                    String currentQuantityFact = userDetailRow.get(4);
+        inventoryList.forEach((e) -> {
+            listRows.put(inventoryList.indexOf(e), Arrays.asList(e.getNumber().toString(), e.getInventory_name(), e.getMeasure_unit(), e.getQuantity_norm().toString(), e.getQuantity_fact().toString()));
+        });
 
-                    table.addCell(new Cell(new Phrase(currentNumber)));
-                    table.addCell(new Cell(new Phrase(currentInventoryName)));
-                    table.addCell(new Cell(new Phrase(currentMeasureUnit)));
-                    table.addCell(new Cell(new Phrase(currentQuantityNorm)));
-                    table.addCell(new Cell(new Phrase(currentQuantityFact)));
-                });
-            }
+        listRows.forEach((index,userDetailRow) -> {
+            String currentNumber = userDetailRow.get(0);
+            String currentInventoryName = userDetailRow.get(1);
+            String currentMeasureUnit = userDetailRow.get(2);
+            String currentQuantityNorm = userDetailRow.get(3);
+            String currentQuantityFact = userDetailRow.get(4);
+
+            table.addCell(new Cell(new Phrase(currentNumber)));
+            table.addCell(new Cell(new Phrase(currentInventoryName)));
+            table.addCell(new Cell(new Phrase(currentMeasureUnit)));
+            table.addCell(new Cell(new Phrase(currentQuantityNorm)));
+            table.addCell(new Cell(new Phrase(currentQuantityFact)));
         });
 
         document.add(table);
     }
+    private void createLine(Document document, String str){
+
+        PdfPTable table = new PdfPTable(1);
+        table.setTotalWidth(1000);
+        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+        table.getDefaultCell().setPaddingBottom(5);
+        table.getDefaultCell().setBorder(Rectangle.TOP);
+        table.addCell(new Paragraph(str));
+
+        document.add(table);
+    }
+
+
 }
