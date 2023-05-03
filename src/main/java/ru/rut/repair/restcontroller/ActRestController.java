@@ -23,10 +23,10 @@ public class ActRestController {
     }
 
     @PostMapping()
-    public void add(@RequestBody Act act){
+    public void add(@RequestBody Act act, @RequestParam(required = false) int loc_id){
         actService.add(act);
+        actService.add(act,loc_id);
     }
-
     @DeleteMapping()
     public void delete(@RequestParam int id){
         actService.remove(id);

@@ -5,16 +5,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.rut.repair.model.Act;
 import ru.rut.repair.repository.ActRepository;
+import ru.rut.repair.repository.LocomotiveRepository;
 
 import java.util.List;
 
 @Service
 public class ActService{
     private final ActRepository actRepository;
+    private final LocomotiveRepository locomotiveRepository;
 
     @Autowired
-    public ActService(ActRepository actRepository) {
+    public ActService(ActRepository actRepository, LocomotiveRepository locomotiveRepository) {
         this.actRepository = actRepository;
+        this.locomotiveRepository = locomotiveRepository;
     }
 
     public Act getById(int id){
@@ -28,6 +31,11 @@ public class ActService{
     }
     @Transactional
     public void add(Act act){
+        actRepository.save(act);
+    }
+    @Transactional
+    public void add(Act act, int loc_id){
+        act.setLocomotive(locomotiveRepository.getReferenceById(loc_id));
         actRepository.save(act);
     }
     @Transactional

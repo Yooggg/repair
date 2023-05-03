@@ -28,6 +28,13 @@ public class Act {
         this.workKind = workKind;
     }
 
+    public Act(String number, String date, String company, String workKind) {
+        this.number = number;
+        this.date = date;
+        this.company = company;
+        this.workKind = workKind;
+    }
+
     public Act() {
     }
 
