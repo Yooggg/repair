@@ -3,6 +3,7 @@ package ru.rut.repair.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.rut.repair.dto.InventoryDto;
 import ru.rut.repair.model.Inventory;
 import ru.rut.repair.model.Works;
 import ru.rut.repair.repository.ActRepository;
@@ -26,8 +27,8 @@ public class InventoryService {
         return inventoryRepository.findAll();
     }
 
-    public List<Inventory> getListByActId(int act_id){
-        return inventoryRepository.findAllByActId(act_id);
+    public List<Inventory> getListByActId(int actId){
+        return inventoryRepository.findAllByActId(actId);
     }
 
     public void remove(int id){
@@ -35,16 +36,19 @@ public class InventoryService {
     }
 
     @Transactional
-    public void add(Inventory inventory, Integer act_id){
-        inventory.setAct(actRepository.getReferenceById(act_id));
+    public void add(Inventory inventory){
         inventoryRepository.save(inventory);
     }
 
     @Transactional
-    public void edit(int act_id,int id, Inventory inventory){
-        Inventory inventory1 = inventoryRepository.getReferenceById(id);
-        inventory1.copy(inventory);
-        inventory1.setAct(actRepository.getReferenceById(act_id));
+    public void edit(InventoryDto inventoryDto){
+        Inventory inventory1 = inventoryRepository.getReferenceById(inventoryDto.getId());
+        inventory1.setInventoryName(inventoryDto.getInventoryName());
+        inventory1.setQuantityNorm(inventoryDto.getQuantityNorm());
+        inventory1.setQuantityFact(inventoryDto.getQuantityFact());
+        inventory1.setNumber(inventoryDto.getNumber());
+        inventory1.setMeasureUnit(inventoryDto.getMeasureUnit());
+        inventory1.setAct(actRepository.getReferenceById(inventoryDto.getActId()));
         inventoryRepository.save(inventory1);
     }
 }

@@ -1,54 +1,48 @@
-package ru.rut.repair.model;
+package ru.rut.repair.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "INVENTORY")
-public class Inventory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class InventoryDto {
     private Integer id;
 
-    @Column(name = "NUMBER")
     private Integer number;
 
-    @Column(name = "INVENTORY_NAME")
     private String inventoryName;
 
-    @Column(name = "MEASURE_UNIT")
     private String measureUnit;
 
-    @Column(name = "QUANTITY_NORM")
     private Integer quantityNorm;
 
-    @Column(name = "QUANTITY_FACT")
     private Integer quantityFact;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ACT_ID")
-    private Act act;
 
-    public Inventory() {
+    private Integer actId;
+
+    public InventoryDto() {
     }
 
-    public Inventory(Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact, Act act) {
+    public InventoryDto(Integer id, Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact, Integer actId) {
+        this.id = id;
         this.number = number;
         this.inventoryName = inventoryName;
         this.measureUnit = measureUnit;
         this.quantityNorm = quantityNorm;
         this.quantityFact = quantityFact;
-        this.act = act;
+        this.actId = actId;
     }
 
-    public Inventory(Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact) {
+    public InventoryDto(Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact, Integer actId) {
         this.number = number;
         this.inventoryName = inventoryName;
         this.measureUnit = measureUnit;
         this.quantityNorm = quantityNorm;
         this.quantityFact = quantityFact;
+        this.actId = actId;
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getNumber() {
@@ -91,19 +85,11 @@ public class Inventory {
         this.quantityFact = quantityFact;
     }
 
-    public Act getAct() {
-        return act;
+    public Integer getActId() {
+        return actId;
     }
 
-    public void setAct(Act act) {
-        this.act = act;
-    }
-
-    public void copy(Inventory inventory) {
-        number = inventory.getNumber();
-        inventoryName = inventory.getInventoryName();
-        measureUnit = inventory.getMeasureUnit();
-        quantityNorm = inventory.getQuantityNorm();
-        quantityFact = inventory.getQuantityFact();
+    public void setActId(Integer actId) {
+        this.actId = actId;
     }
 }

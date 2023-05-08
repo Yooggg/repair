@@ -3,6 +3,7 @@ package ru.rut.repair.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.rut.repair.dto.ActDto;
 import ru.rut.repair.model.Act;
 import ru.rut.repair.repository.ActRepository;
 import ru.rut.repair.repository.LocomotiveRepository;
@@ -30,18 +31,29 @@ public class ActService{
         actRepository.deleteById(id);
     }
     @Transactional
-    public void add(Act act){
+    public void add(ActDto actDto){
+        Act act = new Act();
+        act.setLocomotive(locomotiveRepository.getReferenceById(actDto.getLocomotiveId()));
+        act.setCompany(actDto.getCompany());
+        act.setDate(actDto.getDate());
+        act.setNumber(actDto.getNumber());
+        act.setWorkKind(actDto.getWorkKind());
         actRepository.save(act);
     }
     @Transactional
-    public void add(Act act, int loc_id){
-        act.setLocomotive(locomotiveRepository.getReferenceById(loc_id));
+    public void add(Act act, int locId){
+        act.setLocomotive(locomotiveRepository.getReferenceById(locId));
         actRepository.save(act);
     }
     @Transactional
-    public void edit(int id, Act act){
-        Act act1 = actRepository.getReferenceById(id);
-        act1.copy(act);
+    public void edit(ActDto actDto){
+        Act act1 = actRepository.getReferenceById(actDto.getId());
+        act1.setWorkKind(actDto.getWorkKind());
+        act1.setNumber(actDto.getNumber());
+        act1.setDate(actDto.getDate());
+        act1.setCompany(actDto.getCompany());
+        act1.setLocomotive(locomotiveRepository.getReferenceById(actDto.getLocomotiveId()));
         actRepository.save(act1);
     }
+
 }

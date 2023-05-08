@@ -33,8 +33,8 @@ public class PdfController {
         this.inventoryService = inventoryService;
     }
 
-    @PostMapping("certificate/{act_id}/print")
-    public Document createPDF(@PathVariable(value = "act_id") int id) throws FileNotFoundException {
+    @PostMapping("certificate/{actId}/print")
+    public Document createPDF(@PathVariable(value = "actId") int id) throws FileNotFoundException {
         String FILE = "act" + id + ".pdf";
         Act act = actService.getById(id);
 
@@ -162,7 +162,7 @@ public class PdfController {
         List<Inventory> inventoryList = inventoryService.getListByActId(act.getId());
 
         inventoryList.forEach((e) -> {
-            listRows.put(inventoryList.indexOf(e), Arrays.asList(e.getNumber().toString(), e.getInventory_name(), e.getMeasure_unit(), e.getQuantity_norm().toString(), e.getQuantity_fact().toString()));
+            listRows.put(inventoryList.indexOf(e), Arrays.asList(e.getNumber().toString(), e.getInventoryName(), e.getMeasureUnit(), e.getQuantityNorm().toString(), e.getQuantityFact().toString()));
         });
 
         listRows.forEach((index,userDetailRow) -> {

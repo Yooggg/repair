@@ -2,6 +2,7 @@ package ru.rut.repair.restcontroller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.rut.repair.dto.ActDto;
 import ru.rut.repair.model.Act;
 import ru.rut.repair.service.ActService;
 
@@ -23,9 +24,8 @@ public class ActRestController {
     }
 
     @PostMapping()
-    public void add(@RequestBody Act act, @RequestParam(required = false) int loc_id){
-        actService.add(act);
-        actService.add(act,loc_id);
+    public void add(@RequestBody ActDto actDto){
+        actService.add(actDto);
     }
     @DeleteMapping()
     public void delete(@RequestParam int id){
@@ -33,7 +33,7 @@ public class ActRestController {
     }
 
     @PutMapping()
-    public void edit(@RequestParam int id, @RequestBody Act act){
-        actService.edit(id,act);
+    public void edit(@RequestBody ActDto actDto){
+        actService.edit(actDto);
     }
 }

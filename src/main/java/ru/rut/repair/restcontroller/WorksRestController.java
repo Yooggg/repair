@@ -2,6 +2,7 @@ package ru.rut.repair.restcontroller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.rut.repair.dto.WorksDto;
 import ru.rut.repair.model.Works;
 import ru.rut.repair.service.ActService;
 import ru.rut.repair.service.WorksService;
@@ -19,23 +20,23 @@ public class WorksRestController {
         this.actService = actService;
     }
 
-    @GetMapping("certificate/{act_id}/modernization")
-    public List<Works> get(@PathVariable("act_id") int act_id){
+    @GetMapping("certificate/modernization")
+    public List<Works> get(){
         return worksService.getList();
     }
 
-    @PostMapping("certificate/{act_id}/modernization")
-    public void add(@PathVariable("act_id") int act_id,@RequestBody Works works){
-        worksService.add(works, act_id);
+    @PostMapping("certificate/modernization")
+    public void add(@RequestBody WorksDto worksDto){
+        worksService.add(worksDto);
     }
 
-    @DeleteMapping("certificate/{act_id}/modernization")
-    public void delete(@PathVariable("act_id") int act_id, @RequestParam int id){
+    @DeleteMapping("certificate/modernization")
+    public void delete(@RequestParam int id){
         worksService.remove(id);
     }
 
-    @PutMapping("certificate/{act_id}/modernization")
-    public void edit(@PathVariable("act_id") int act_id, @RequestParam int id, @RequestBody Works works){
-        worksService.edit(act_id, id, works);
+    @PutMapping("certificate/modernization")
+    public void edit(@RequestBody WorksDto worksDto){
+        worksService.edit(worksDto);
     }
 }
