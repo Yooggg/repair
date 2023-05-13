@@ -24,16 +24,14 @@ public class WorksService {
     public List<Works> getList() {
         return worksRepository.findAll();
     }
+
     public List<Works> getListByActId(int actId){
         return worksRepository.findAllByActId(actId);
     }
 
-    @Transactional
     public void add(WorksDto worksDto) {
-        Works works = new Works();
-        works.setName(worksDto.getName());
-        works.setQuantity(worksDto.getQuantity());
-        works.setAct(actRepository.getReferenceById(worksDto.getActId()));
+        Works works = new Works(worksDto.getName(), worksDto.getQuantity(),
+                actRepository.getReferenceById(worksDto.getActId()));
         worksRepository.save(works);
     }
 

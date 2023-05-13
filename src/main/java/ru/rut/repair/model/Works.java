@@ -15,7 +15,7 @@ public class Works {
 
     @Column(name = "QUANTITY")
     private Integer quantity;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "ACT_ID")
     private Act act;
 

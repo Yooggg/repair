@@ -1,6 +1,8 @@
 package ru.rut.repair.dto;
 
 public class ActDto {
+
+    private LocomotiveDto locomotiveDto;
     private Integer id;
 
     private Integer locomotiveId;
@@ -13,6 +15,21 @@ public class ActDto {
 
     private String workKind;
 
+    public ActDto() {
+    }
+
+    /*
+    * Конструктор, если нужно создать новый локомотив */
+    public ActDto(LocomotiveDto locomotiveDto, String number, String date, String company, String workKind) {
+        this.locomotiveDto = locomotiveDto;
+        this.number = number;
+        this.date = date;
+        this.company = company;
+        this.workKind = workKind;
+    }
+
+    /*
+    * Конструктор, если уже существует локомотив*/
     public ActDto(Integer locomotiveId, String number, String date, String company, String workKind) {
         this.locomotiveId = locomotiveId;
         this.number = number;
@@ -21,7 +38,22 @@ public class ActDto {
         this.workKind = workKind;
     }
 
-    public ActDto() {
+    /*
+    * Конструктор для edit, если нужно изменить */
+    public ActDto(String number, Integer id, String date, String company, String workKind) {
+        this.id = id;
+        this.number = number;
+        this.date = date;
+        this.company = company;
+        this.workKind = workKind;
+    }
+
+    public LocomotiveDto getLocomotiveDto() {
+        return locomotiveDto;
+    }
+
+    public void setLocomotiveDto(LocomotiveDto locomotiveDto) {
+        this.locomotiveDto = locomotiveDto;
     }
 
     public Integer getId() {

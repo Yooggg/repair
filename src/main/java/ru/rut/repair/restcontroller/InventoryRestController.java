@@ -4,46 +4,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.rut.repair.dto.InventoryDto;
 import ru.rut.repair.model.Inventory;
-import ru.rut.repair.service.ActService;
 import ru.rut.repair.service.InventoryService;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("certificate/detail")
 public class InventoryRestController {
 
-    private final ActService actService;
     private final InventoryService inventoryService;
 
     @Autowired
-    public InventoryRestController(ActService actService, InventoryService inventoryService) {
-        this.actService = actService;
+    public InventoryRestController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping("certificate/detail")
-    public List<Inventory> get(@RequestParam int actId){
+    @GetMapping()
+    public List<Inventory> get(){
         return inventoryService.getList();
     }
 
-    @PostMapping("certificate/detail")
+    @PostMapping()
     public void add(@RequestBody InventoryDto inventoryDto){
-        Inventory inventory = new Inventory();
-        inventory.setInventoryName(inventoryDto.getInventoryName());
-        inventory.setNumber(inventoryDto.getNumber());
-        inventory.setMeasureUnit(inventoryDto.getMeasureUnit());
-        inventory.setQuantityNorm(inventory.getQuantityNorm());
-        inventory.setQuantityFact(inventory.getQuantityFact());
-        inventory.setAct(actService.getById(inventoryDto.getActId()));
-        inventoryService.add(inventory);
+        inventoryService.add(inventoryDto);
     }
 
-    @DeleteMapping("certificate/detail")
+    @DeleteMapping()
     public void delete(@RequestParam int id){
         inventoryService.remove(id);
     }
 
-    @PutMapping("certificate/detail")
+    @PutMapping()
     public void edit(@RequestBody InventoryDto inventoryDto){
         inventoryService.edit(inventoryDto);
     }

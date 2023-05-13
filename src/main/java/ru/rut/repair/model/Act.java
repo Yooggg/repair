@@ -8,7 +8,7 @@ public class Act {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "LOCOMOTIVE_ID")
     private Locomotive locomotive;
     @Column(name = "NUMBER")
@@ -36,6 +36,10 @@ public class Act {
     }
 
     public Act() {
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getId() {

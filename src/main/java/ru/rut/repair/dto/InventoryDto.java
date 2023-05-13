@@ -18,6 +18,8 @@ public class InventoryDto {
     public InventoryDto() {
     }
 
+    /*
+    * Конструктор для edit*/
     public InventoryDto(Integer id, Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact, Integer actId) {
         this.id = id;
         this.number = number;
@@ -28,6 +30,8 @@ public class InventoryDto {
         this.actId = actId;
     }
 
+    /*
+    * Конструктор для создания нового инвентаря*/
     public InventoryDto(Integer number, String inventoryName, String measureUnit, Integer quantityNorm, Integer quantityFact, Integer actId) {
         this.number = number;
         this.inventoryName = inventoryName;

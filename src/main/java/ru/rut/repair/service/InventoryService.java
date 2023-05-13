@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.rut.repair.dto.InventoryDto;
 import ru.rut.repair.model.Inventory;
-import ru.rut.repair.model.Works;
 import ru.rut.repair.repository.ActRepository;
 import ru.rut.repair.repository.InventoryRepository;
 
@@ -35,8 +34,12 @@ public class InventoryService {
         inventoryRepository.deleteById(id);
     }
 
-    @Transactional
-    public void add(Inventory inventory){
+    public void add(InventoryDto inventoryDto){
+
+        Inventory inventory = new Inventory(inventoryDto.getNumber(), inventoryDto.getInventoryName(),
+                inventoryDto.getMeasureUnit(), inventoryDto.getQuantityNorm(), inventoryDto.getQuantityFact(),
+                actRepository.getReferenceById(inventoryDto.getActId()));
+
         inventoryRepository.save(inventory);
     }
 

@@ -23,7 +23,7 @@ public class Inventory {
 
     @Column(name = "QUANTITY_FACT")
     private Integer quantityFact;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "ACT_ID")
     private Act act;
 

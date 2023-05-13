@@ -10,32 +10,31 @@ import ru.rut.repair.service.WorksService;
 import java.util.List;
 
 @RestController
+@RequestMapping("certificate/modernization")
 public class WorksRestController {
     private final WorksService worksService;
-    private final ActService actService;
 
     @Autowired
-    public WorksRestController(WorksService worksService, ActService actService) {
+    public WorksRestController(WorksService worksService) {
         this.worksService = worksService;
-        this.actService = actService;
     }
 
-    @GetMapping("certificate/modernization")
+    @GetMapping()
     public List<Works> get(){
         return worksService.getList();
     }
 
-    @PostMapping("certificate/modernization")
+    @PostMapping()
     public void add(@RequestBody WorksDto worksDto){
         worksService.add(worksDto);
     }
 
-    @DeleteMapping("certificate/modernization")
+    @DeleteMapping()
     public void delete(@RequestParam int id){
         worksService.remove(id);
     }
 
-    @PutMapping("certificate/modernization")
+    @PutMapping()
     public void edit(@RequestBody WorksDto worksDto){
         worksService.edit(worksDto);
     }

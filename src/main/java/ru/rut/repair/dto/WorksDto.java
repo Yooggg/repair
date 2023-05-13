@@ -10,6 +10,8 @@ public class WorksDto {
 
     private Integer actId;
 
+    /*
+    * Конструктор для edit*/
     public WorksDto(Integer id, String name, Integer quantity, Integer actId) {
         this.id = id;
         this.name = name;
@@ -17,6 +19,8 @@ public class WorksDto {
         this.actId = actId;
     }
 
+    /*
+    * Конструктор для создания новых работ*/
     public WorksDto(String name, Integer quantity, Integer actId) {
         this.name = name;
         this.quantity = quantity;
