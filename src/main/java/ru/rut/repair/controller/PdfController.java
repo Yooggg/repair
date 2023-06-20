@@ -2,11 +2,13 @@ package ru.rut.repair.controller;
 
 import com.lowagie.text.*;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.alignment.HorizontalAlignment;
+import com.lowagie.text.alignment.VerticalAlignment;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.rut.repair.model.Act;
 import ru.rut.repair.model.Inventory;
 import ru.rut.repair.model.Locomotive;
@@ -33,62 +35,111 @@ public class PdfController {
         this.inventoryService = inventoryService;
     }
 
-    @PostMapping("certificate/{actId}/print")
-    public Document createPDF(@PathVariable(value = "actId") int id) throws FileNotFoundException {
+    @PostMapping("certificate/print")
+    public Document createPDF(@RequestParam int id) throws FileNotFoundException {
         String FILE = "act" + id + ".pdf";
         Act act = actService.getById(id);
 
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(FILE));
+        Font font = new Font(Font.TIMES_ROMAN, 12);
+        Font italic = new Font(Font.ITALIC,12);
+
         document.open();
-        Table table = new Table(1);
-        document.add(new Paragraph("Акт №" + act.getId()));
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("приемки локомотива от ремотного предприятия(сервисной компании)"));
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("Настоящий акт составлен о том, что локомотив"));
-        document.add(new Paragraph(Chunk.NEWLINE));
+
+        enterText(document, "Акт №" + act.getId(), font);
+        enterText(document, "приемки локомотива от ремотного предприятия(сервисной компании)", font);
+        enterText(document, "Настоящий акт составлен о том, что локомотив", font);
+        enterText(document, "\n", font);
+        emptyCell(document);
+
         createTableLoco(document,act);
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("принимается от ремонтного предприятия(сервисной компании)"));
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph(act.getCompany()));
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("после выполнения ТО/ремонта/модернизации/МЛП/испытаний"));
-        document.add(new Paragraph(Chunk.NEWLINE));
+
+        document.add(new Paragraph("принимается от ремонтного предприятия(сервисной компании)\n "));
+        document.add(new Paragraph(act.getCompany()+"\n ", italic));
+        document.add(new Paragraph("после выполнения ТО/ремонта/модернизации/МЛП/испытаний\n "));
         document.add(new Paragraph("Перечень выполненных конструктивных изменений и модернизаци внесен в технический пасспорт локомотива"));
-        document.add(new Paragraph(Chunk.NEWLINE));
+
         createTableWorkName(document,act);
-        document.add(new Paragraph(Chunk.NEWLINE));
+        document.add(new Paragraph("\n "));
         document.add(new Paragraph("Комплектность инвентаря, деталей и узлов"));
-        document.add(new Paragraph(Chunk.NEWLINE));
+
         createTableInventory(document,act);
-        document.add(new Paragraph(Chunk.NEWLINE));
-        document.add(new Paragraph("При приемке не выявлено нарушений действующей нормативной документации по ремонту(техническому обслуживанию, модернизации)(правил, инструкций и т.д.)."));
+
+        document.add(new Paragraph("При приемке не выявлено нарушений действующей нормативной документации по ремонту(техническому обслуживанию, модернизации)(правил, инструкций и т.д.).\n "));
         document.add(new Paragraph(Chunk.NEWLINE));
         document.add(new Paragraph(Chunk.NEWLINE));
         createLine(document,"ФИО");
         document.add(new Paragraph(Chunk.NEWLINE));
         document.add(new Paragraph(Chunk.NEWLINE));
-        createLine(document,"дата");
+        createLine(document,"Дата");
 
         document.close();
         return document;
     }
 
+    private void enterText(Document document, String str, Font font){
+
+        Table table = new Table(1);
+        table.setBorder(Rectangle.NO_BORDER);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.setWidth(300);
+
+        Cell cell = new Cell(new Paragraph(str, font));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+        table.addCell(cell);
+
+        document.add(table);
+    }
+    private void enterTextInTable(Table table, String str, Font font){
+
+        Cell cell = new Cell(new Paragraph(str + "\n ", font));
+
+        cell.setBorder(Rectangle.BOX);
+        cell.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        cell.setVerticalAlignment(VerticalAlignment.BASELINE);
+
+        table.addCell(cell);
+
+    }
+    private void emptyCell(Document document){
+
+        Table table = new Table(1);
+        table.setBorder(Rectangle.NO_BORDER);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.setWidth(300);
+
+        Cell cell = new Cell(new Paragraph(" "));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+        table.addCell(cell);
+
+        document.add(table);
+
+    }
     private void createTableLoco(Document document, Act act){
         Table table = new Table(5);
+        table.setWidth(105);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setVerticalAlignment(VerticalAlignment.CENTER);
+        table.getDefaultCell().setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setColspan(0);
+        table.getDefaultCell().setRowspan(0);
+
         ArrayList<String> headerTable = new ArrayList<>();
-        headerTable.add("Серия");
-        headerTable.add("Заводской номер");
-        headerTable.add("Индекс секции");
-        headerTable.add("Депо(предприятие) приписки");
-        headerTable.add("Факт проведения работ");
+        headerTable.add("Серия\n ");
+        headerTable.add("Заводской номер\n ");
+        headerTable.add("Индекс секции\n ");
+        headerTable.add("Депо(предприятие) приписки\n ");
+        headerTable.add("Факт проведения работ\n ");
 
         headerTable.forEach(e -> {
             Cell current = new Cell(new Phrase(e));
+            current.setHorizontalAlignment(HorizontalAlignment.CENTER);
             current.setHeader(true);
-            current.getVerticalAlignment();
             table.addCell(current);
         });
 
@@ -102,25 +153,31 @@ public class PdfController {
             String currentHomeDepot = userDetailRow.get(3);
             String currentWorkFact = userDetailRow.get(4);
 
-            table.addCell(new Cell(new Phrase(currentSeries)));
-            table.addCell(new Cell(new Phrase(currentFactoryName)));
-            table.addCell(new Cell(new Phrase(currentSectionIndex)));
-            table.addCell(new Cell(new Phrase(currentHomeDepot)));
-            table.addCell(new Cell(new Phrase(currentWorkFact)));
+            enterTextInTable(table, currentSeries, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentFactoryName, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentSectionIndex, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentHomeDepot, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentWorkFact, new Font(Font.TIMES_ROMAN, 12));
         });
 
         document.add(table);
     }
     private void createTableWorkName(Document document, Act act){
         Table table = new Table(2);
+        table.setWidth(105);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setVerticalAlignment(VerticalAlignment.CENTER);
+        table.getDefaultCell().setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setColspan(0);
+        table.getDefaultCell().setRowspan(0);
         ArrayList<String> headerTable = new ArrayList<>();
-        headerTable.add("Наименование выполненных работ");
-        headerTable.add("Количество");
+        headerTable.add("Наименование выполненных работ\n ");
+        headerTable.add("Количество\n ");
 
         headerTable.forEach(e -> {
             Cell current = new Cell(new Phrase(e));
+            current.setHorizontalAlignment(HorizontalAlignment.CENTER);
             current.setHeader(true);
-            current.getVerticalAlignment();
             table.addCell(current);
         });
 
@@ -135,21 +192,26 @@ public class PdfController {
             String currentName = userDetailRow.get(0);
             String currentQuantity = userDetailRow.get(1);
 
-            table.addCell(new Cell(new Phrase(currentName)));
-            table.addCell(new Cell(new Phrase(currentQuantity)));
-
+            enterTextInTable(table, currentName, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentQuantity, new Font(Font.TIMES_ROMAN, 12));
         });
 
         document.add(table);
     }
     private void createTableInventory(Document document, Act act){
         Table table = new Table(5);
+        table.setWidth(105);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setVerticalAlignment(VerticalAlignment.CENTER);
+        table.getDefaultCell().setHorizontalAlignment(HorizontalAlignment.CENTER);
+        table.getDefaultCell().setColspan(0);
+        table.getDefaultCell().setRowspan(0);
         ArrayList<String> headerTable = new ArrayList<>();
-        headerTable.add("N п/п");
-        headerTable.add("Наименование инвентаря");
-        headerTable.add("Ед.изм");
-        headerTable.add("Количество по норме");
-        headerTable.add("Количество по факту");
+        headerTable.add("N п/п\n ");
+        headerTable.add("Наименование инвентаря\n ");
+        headerTable.add("Ед.изм\n ");
+        headerTable.add("Количество по норме\n ");
+        headerTable.add("Количество по факту\n ");
 
         headerTable.forEach(e -> {
             Cell current = new Cell(new Phrase(e));
@@ -172,23 +234,26 @@ public class PdfController {
             String currentQuantityNorm = userDetailRow.get(3);
             String currentQuantityFact = userDetailRow.get(4);
 
-            table.addCell(new Cell(new Phrase(currentNumber)));
-            table.addCell(new Cell(new Phrase(currentInventoryName)));
-            table.addCell(new Cell(new Phrase(currentMeasureUnit)));
-            table.addCell(new Cell(new Phrase(currentQuantityNorm)));
-            table.addCell(new Cell(new Phrase(currentQuantityFact)));
+            enterTextInTable(table, currentNumber, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentInventoryName, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentMeasureUnit, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentQuantityNorm, new Font(Font.TIMES_ROMAN, 12));
+            enterTextInTable(table, currentQuantityFact, new Font(Font.TIMES_ROMAN, 12));
         });
 
         document.add(table);
     }
     private void createLine(Document document, String str){
 
-        PdfPTable table = new PdfPTable(1);
-        table.setTotalWidth(1000);
-        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        table.getDefaultCell().setPaddingBottom(5);
-        table.getDefaultCell().setBorder(Rectangle.TOP);
-        table.addCell(new Paragraph(str));
+        Table table = new Table(1);
+        table.setWidth(105);
+        table.getDefaultCell().setHorizontalAlignment(HorizontalAlignment.LEFT);
+        table.setBorder(Rectangle.TOP);
+        Cell cell = new Cell(new Paragraph(str + "\n", new Font(Font.TIMES_ROMAN, 12)));
+        cell.setHorizontalAlignment(HorizontalAlignment.LEFT);
+        cell.setHeader(true);
+        cell.setBorder(Rectangle.TOP);
+        table.addCell(cell);
 
         document.add(table);
     }
